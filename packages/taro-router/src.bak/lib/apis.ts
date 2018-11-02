@@ -12,6 +12,7 @@ export interface NavigateOpts {
 }
 
 const navigateTo = function (opts = {} as NavigateOpts) {
+  // TODO: success fail complete
   const current = h.now()
   const currentUrl = current.url
   const url = resolvePathname(opts.url, currentUrl)
@@ -20,6 +21,7 @@ const navigateTo = function (opts = {} as NavigateOpts) {
 }
 
 const navigateBack = (opts = {} as NavigateOpts) => {
+  // TODO: success fail complete
   let delta = opts.delta
   if (typeof delta !== 'number') {
     delta = 1
@@ -28,13 +30,10 @@ const navigateBack = (opts = {} as NavigateOpts) => {
 }
 
 const redirectTo = function (opts = {} as NavigateOpts) {
-  // const success = opts.success
-  // const fail = opts.fail
-  // const complete = opts.complete
+  // TODO: success fail complete
 
   h.replace({
     url: opts.url
-    /* TODO: success fail complete*/
   })
   return Promise.resolve()
 }

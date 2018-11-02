@@ -35,7 +35,6 @@ const taroApis = [
   'internal_dynamic_recursive'
 ]
 const nervJsImportDefaultName = 'Nerv'
-const routerImportName = 'Router'
 const tabBarComponentName = 'Tabbar'
 const tabBarContainerComponentName = 'TabbarContainer'
 const tabBarPanelComponentName = 'TabbarPanel'
@@ -158,12 +157,23 @@ function processEntry (code, filePath) {
         const isComponentWillUnmount = key.name === 'componentWillUnmount'
 
         if (isRender) {
-          const pageRequires = pages.map(v => {
+          const routes = pages.map((v, k) => {
             const absPagename = v.startsWith('/') ? v : `/${v}`
             const relPagename = `.${absPagename}`
-            return `['${absPagename}', require('${relPagename}').default]`
+            return `{
+              path: '${absPagename}',
+              component: require('${relPagename}').default,
+              isIndex: ${k === 0}
+            }`
           }).join(',')
-          funcBody = `<${routerImportName} routes={[${pageRequires}]} />`
+          funcBody = `<Router routes={[${routes}]} />`
+          // funcBody = `<${routerImportName} routes={[${pageRequires}]} />`
+          // const routes = pages.map((v, k) => {
+          //   const absPagename = v.startsWith('/') ? v : `/${v}`
+          //   const relPagename = `.${absPagename}`
+          //   return `<Route path="${absPagename}" component={require('${relPagename}').default} ${k === 0 ? 'isIndex' : ''} />`
+          // }).join('')
+          // funcBody = `<Router>${routes}</Router>`
 
           /* 插入Tabbar */
           if (tabBar) {
@@ -436,7 +446,7 @@ function processEntry (code, filePath) {
     Program: {
       exit (astPath) {
         const importNervjsNode = t.importDefaultSpecifier(t.identifier(nervJsImportDefaultName))
-        const importRouterNode = toAst(`import { ${routerImportName} } from '${PACKAGES['@tarojs/router']}'`)
+        const importRouterNode = toAst(`import Router from '${PACKAGES['@tarojs/router']}'`)
         const importTaroH5Node = toAst(`import ${taroImportDefaultName} from '${PACKAGES['@tarojs/taro-h5']}'`)
         const renderCallNode = toAst(renderCallCode)
         const importComponentNode = toAst(`import { View, ${tabBarComponentName}, ${tabBarContainerComponentName}, ${tabBarPanelComponentName}} from '${PACKAGES['@tarojs/components']}'`)
