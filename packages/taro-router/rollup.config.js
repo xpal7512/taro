@@ -11,9 +11,9 @@ const cwd = __dirname
 const entries = [{
   input: 'hashRouter.tsx',
   output: 'hashRouter.js'
-}, {
-  input: 'browserRouter.tsx',
-  output: 'browserRouter.js'
+// }, {
+//   input: 'browserRouter.tsx',
+//   output: 'browserRouter.js'
 }]
 
 const baseConfig = {
@@ -42,6 +42,7 @@ const baseConfig = {
       plugins: [
         '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-object-rest-spread',
+        '@babel/plugin-syntax-dynamic-import',
         ['@babel/plugin-transform-react-jsx', {
           'pragma': 'Nerv.createElement'
         }]

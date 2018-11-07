@@ -29,6 +29,10 @@ interface RedirectToOption {
 const createNavigateTo = (history: History) => {
   return async function ({ url, success, fail, complete }: NavigateToOption) {
     try {
+      if (/^(https?:)\/\//.test(url)) {
+        window.location.assign(url);
+        return
+      }
       history.push(url)
       tryToCall(success)
     } catch (e) {
@@ -54,6 +58,10 @@ const createNavigateBack = (history: History) => {
 
 const createRedirectTo = (history: History) => {
   return async ({ url, success, fail, complete }: RedirectToOption) => {
+    if (/^(https?:)\/\//.test(url)) {
+      window.location.assign(url);
+      return
+    }
     try {
       history.replace(url)
       tryToCall(success)

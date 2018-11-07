@@ -5,18 +5,21 @@ type Path = string
 export type PageComponent = new(
   props: any,
   context: any
-) => Component<{
+) => Component<any, any>
+
+
+export type WrappedPageComponent = new(props: any, context: any) => Component<{
   router: {
     matched: boolean;
     location: Location;
   };
-}, any>
+}>
 
 export interface RouteObj {
   path: Path;
-  component: PageComponent;
+  component: () => Promise<{ default: PageComponent }>;
   isIndex: boolean;
-  key: string;
+  key?: string;
 }
 
 export type Action = 'POP' | 'PUSH' | 'REPLACE'

@@ -162,18 +162,11 @@ function processEntry (code, filePath) {
             const relPagename = `.${absPagename}`
             return `{
               path: '${absPagename}',
-              component: require('${relPagename}').default,
+              component: () => import('${relPagename}'),
               isIndex: ${k === 0}
             }`
           }).join(',')
           funcBody = `<Router routes={[${routes}]} />`
-          // funcBody = `<${routerImportName} routes={[${pageRequires}]} />`
-          // const routes = pages.map((v, k) => {
-          //   const absPagename = v.startsWith('/') ? v : `/${v}`
-          //   const relPagename = `.${absPagename}`
-          //   return `<Route path="${absPagename}" component={require('${relPagename}').default} ${k === 0 ? 'isIndex' : ''} />`
-          // }).join('')
-          // funcBody = `<Router>${routes}</Router>`
 
           /* 插入Tabbar */
           if (tabBar) {
@@ -206,7 +199,7 @@ function processEntry (code, filePath) {
               </${providorImportName}>`
           }
 
-          /* 插入<TaroRouter.Router /> */
+          /* 插入<Router /> */
           node.body = toAst(`{return (${funcBody});}`)
         }
         if (tabBar && isComponentWillMount) {

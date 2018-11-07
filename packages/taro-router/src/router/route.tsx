@@ -3,6 +3,7 @@ import Nerv, { PropTypes } from 'nervjs';
 
 import createWrappedComponent from './createWrappedComponent';
 import * as Types from '../utils/types';
+import createLoadableComponent from './loadable';
 
 interface RouteProps {
   path: string;
@@ -22,9 +23,20 @@ class Route extends Component<RouteProps, RouteState> {
     router: PropTypes.object.isRequired
   }
 
+  static childContextTypes = {
+    router: PropTypes.object,
+    store: PropTypes.object
+  }
+
   state = {
     match: this.computeMatch(this.context.router)
   };
+
+  getChildContext () {
+    return {
+      ...this.context
+    }
+  }
 
   computeMatch (router) {
     const pathname = router.location.pathname;
@@ -35,7 +47,11 @@ class Route extends Component<RouteProps, RouteState> {
   }
 
   componentWillMount () {
-    this.wrappedComponent = createWrappedComponent(this.props.component)
+    const LoadableComponent = createLoadableComponent({
+      loader: this.props.component,
+      loading: <div />
+    })
+    this.wrappedComponent = createWrappedComponent(LoadableComponent)
   }
 
   componentWillReceiveProps (nProps, nContext) {
@@ -49,14 +65,15 @@ class Route extends Component<RouteProps, RouteState> {
 
     const { match } = this.state;
     const { router } = this.context;
-
-    // TODO dynamic imported component
-    return Nerv.createElement(this.wrappedComponent, {
-      router: {
-        matched: match,
-        location: router.location
-      }
-    })
+    const WrappedComponent = this.wrappedComponent
+    return (
+      <WrappedComponent {...{
+        router: {
+          matched: match,
+          location: router.location
+        }
+      }} />
+    )
   }
 }
 

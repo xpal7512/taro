@@ -1,9 +1,17 @@
-import * as Types from '../utils/types'
+import { PropTypes } from 'nervjs';
+
 import { tryToCall } from '../utils';
+import * as Types from '../utils/types';
+
 
 const createWrappedComponent = (component: Types.PageComponent) => {
   class WrappedComponent extends component {
     $router: Types.Location
+
+    static contextTypes = {
+      router: PropTypes.object,
+      store: PropTypes.object
+    }
 
     constructor(props, context) {
       super(props, context)

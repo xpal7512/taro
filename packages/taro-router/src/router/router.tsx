@@ -1,5 +1,4 @@
 import Taro, { Component } from '@tarojs/taro-h5';
-import clone from 'lodash/clone';
 import Nerv, { PropTypes } from 'nervjs';
 
 import { createNavigateBack, createNavigateTo, createRedirectTo } from '../apis';
@@ -46,19 +45,24 @@ class Router extends Component<Props, State> {
     Taro.getCurrentPages = () => this.props.children || []
   }
 
-  computeMatch (location: Types.Location): Types.RouteObj | undefined {
+  computeMatch (location: Types.Location): Types.RouteObj {
     // 找出匹配的路由组件
     const pathname = location.pathname;
     const matchedRoute = this.props.routes.find(({path, isIndex}) => {
       if (isIndex && pathname === '/') return true;
       return pathname === path;
     })
-    // TODO 404
-    return matchedRoute!
+
+    return matchedRoute || {
+      path: pathname,
+      component: () => import('./page404'),
+      isIndex: pathname === '/',
+      key: location.state.key
+    }
   }
 
   push (toLocation: Types.Location) {
-    const routeStack: Types.RouteObj[] = clone(this.state.routeStack)
+    const routeStack: Types.RouteObj[] = [...this.state.routeStack]
     const matchedRoute = this.computeMatch(toLocation)
     routeStack.push(Object.assign({}, matchedRoute, {
       key: toLocation.state.key
@@ -67,7 +71,7 @@ class Router extends Component<Props, State> {
   }
 
   pop (toLocation: Types.Location, fromLocation: Types.Location) {
-    let routeStack: Types.RouteObj[] = clone(this.state.routeStack)
+    let routeStack: Types.RouteObj[] = [...this.state.routeStack]
     const fromKey = Number(fromLocation.state.key)
     const toKey = Number(toLocation.state.key)
     const delta = toKey - fromKey
@@ -86,7 +90,7 @@ class Router extends Component<Props, State> {
   }
 
   replace (toLocation: Types.Location) {
-    const routeStack: Types.RouteObj[] = clone(this.state.routeStack)
+    const routeStack: Types.RouteObj[] = [...this.state.routeStack]
     const matchedRoute = this.computeMatch(toLocation)
     routeStack.splice(-1, 1, Object.assign({}, matchedRoute, {
       key: toLocation.state.key
@@ -131,7 +135,7 @@ class Router extends Component<Props, State> {
         {this.state.routeStack.map(({ path, component, isIndex, key }) => {
           return Nerv.createElement(Route, {
             path, component, isIndex, key
-          })
+          }, this.context)
         })}
       </div>
     )
