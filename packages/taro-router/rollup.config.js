@@ -11,9 +11,9 @@ const cwd = __dirname
 const entries = [{
   input: 'hashRouter.tsx',
   output: 'hashRouter.js'
-// }, {
-//   input: 'browserRouter.tsx',
-//   output: 'browserRouter.js'
+}, {
+  input: 'browserRouter.tsx',
+  output: 'browserRouter.js'
 }]
 
 const baseConfig = {
